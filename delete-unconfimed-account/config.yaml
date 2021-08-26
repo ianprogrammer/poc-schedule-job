@@ -1,0 +1,30 @@
+aws-staging: &aws-staging
+  database:
+    host: "localhost"
+    database_port: 5432
+    databaseName: "product"
+    user: "productuser"
+    password: "product"
+
+aws-sandbox: &aws-sandbox  
+  database:
+    host: "localhost"
+    database_port: 5432
+    databaseName: "product"
+    user: "productuser"
+    password: "product"  
+
+aws-prod: &aws-prod
+  database:
+    host: "localhost"
+    database_port: 5432
+    databaseName: "product"
+    user: "productuser"
+    password: "product"
+
+
+local: &local
+  <<: *aws-sandbox
+
+development: &development
+  <<: *aws-sandbox
