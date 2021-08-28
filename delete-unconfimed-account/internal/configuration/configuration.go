@@ -122,3 +122,18 @@ func (config *Configuration) BuildDatabaseConfig() DatabaseConfig {
 		Password:     password,
 	}
 }
+
+type ServerConfig struct {
+	Port                     int
+	GracefullShutdownTimeout int
+}
+
+func (config *Configuration) BuildServerConfig() ServerConfig {
+	port := config.GetEnvConfInteger("server.port")
+	gracefullShutdownTimeout := config.GetEnvConfInteger("server.gracefull_shutdown_timeout")
+
+	return ServerConfig{
+		Port:                     port,
+		GracefullShutdownTimeout: gracefullShutdownTimeout,
+	}
+}
