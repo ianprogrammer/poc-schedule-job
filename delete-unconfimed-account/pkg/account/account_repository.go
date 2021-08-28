@@ -1,8 +1,6 @@
 package account
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -12,8 +10,10 @@ type AccountRepository struct {
 
 type IAccountRepository interface {
 	DeleteUnconfimed() error
-	Insert(createdAt time.Time, requiredConfirmation bool) (Account, error)
+	Insert(account Account) (Account, error)
 	DeleteById(id int) error
+	SelectById(id int) (Account, error)
+	Update(id int, a Account) (Account, error)
 }
 
 func NewAccountRepository(db *gorm.DB) *AccountRepository {
@@ -22,15 +22,11 @@ func NewAccountRepository(db *gorm.DB) *AccountRepository {
 	}
 }
 
-func (r *AccountRepository) Insert(createdAt time.Time, requiredConfirmation bool) (Account, error) {
-	result := Account{
-		CreatedAt:            &createdAt,
-		RequiredConfirmation: requiredConfirmation,
-	}
-	if err := r.db.Save(&result); err.Error != nil {
+func (r *AccountRepository) Insert(account Account) (Account, error) {
+	if err := r.db.Save(&account); err.Error != nil {
 		return Account{}, err.Error
 	}
-	return result, nil
+	return account, nil
 }
 
 func (r *AccountRepository) DeleteById(id int) error {
@@ -38,6 +34,30 @@ func (r *AccountRepository) DeleteById(id int) error {
 		return result.Error
 	}
 	return nil
+}
+
+func (r *AccountRepository) SelectById(id int) (Account, error) {
+	var account Account
+
+	if result := r.db.First(&account, id); result.Error != nil {
+		return account, result.Error
+	}
+
+	return account, nil
+
+}
+
+func (r *AccountRepository) Update(id int, a Account) (Account, error) {
+	account, err := r.SelectById(id)
+
+	if err != nil {
+		return Account{}, err
+	}
+
+	if result := r.db.Model(&account).Updates(a); result.Error != nil {
+		return Account{}, result.Error
+	}
+	return account, nil
 }
 
 func (r *AccountRepository) DeleteUnconfimed() error {
