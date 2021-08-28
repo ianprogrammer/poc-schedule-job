@@ -26,7 +26,7 @@ func main() {
 	for i := 0; i < NUM_GOROUTINES; i++ {
 		go func(id int) {
 			job.Cron(context.Background(), START_TIME*time.Second, DELAY_TIME*time.Second, func() {
-				accountService.DeleteUnconfimedAccounts()
+				accountService.DeleteUnconfimed()
 				log.Printf("Rodando go routine %d\n", id)
 			})
 		}(i)

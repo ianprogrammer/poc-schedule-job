@@ -10,7 +10,7 @@ type AccountService struct {
 }
 
 type IAccountService interface {
-	DeleteUnconfimedAccounts()
+	DeleteUnconfimed()
 }
 
 func NewAccountService(accountRepository IAccountRepository) *AccountService {
@@ -19,8 +19,8 @@ func NewAccountService(accountRepository IAccountRepository) *AccountService {
 	}
 }
 
-func (as *AccountService) DeleteUnconfimedAccounts() {
-	err := as.accountRepository.DeleteUnconfimedAccounts()
+func (as *AccountService) DeleteUnconfimed() {
+	err := as.accountRepository.DeleteUnconfimed()
 	if err != nil {
 		log.Fatal(fmt.Errorf("não foi possível deletar os usuários com emails não confirmados, %s", err.Error()))
 	}
