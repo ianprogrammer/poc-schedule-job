@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"delete-unconfirmed-account/internal/cache"
 	"delete-unconfirmed-account/internal/configuration"
 	"delete-unconfirmed-account/internal/database"
 	"delete-unconfirmed-account/pkg/account"
@@ -23,10 +24,11 @@ func (app *App) Run() error {
 
 	configServer := config.BuildServerConfig()
 	configDatabase := config.BuildDatabaseConfig()
+	configRedis := config.BuildRedisConfig()
 	db := database.NewDatabase(configDatabase)
 	accountRepository := account.NewAccountRepository(db)
-	accountService := account.NewAccountService(accountRepository)
-
+	cache := cache.NewRedisClient(configRedis)
+	accountService := account.NewAccountService(accountRepository, cache)
 	e := echo.New()
 
 	account.RegisterProductHandlers(e, accountService)

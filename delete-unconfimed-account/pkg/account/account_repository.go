@@ -14,6 +14,7 @@ type IAccountRepository interface {
 	DeleteById(id int) error
 	SelectById(id int) (Account, error)
 	Update(id int, a Account) (Account, error)
+	ConfirmAccount(id int) (Account, error)
 }
 
 func NewAccountRepository(db *gorm.DB) *AccountRepository {
@@ -60,6 +61,19 @@ func (r *AccountRepository) Update(id int, a Account) (Account, error) {
 	return account, nil
 }
 
+func (r *AccountRepository) ConfirmAccount(id int) (Account, error) {
+	account, err := r.SelectById(id)
+
+	if err != nil {
+		return Account{}, err
+	}
+
+	if result := r.db.Model(&account).Updates(map[string]interface{}{"required_confirmation": false}); result.Error != nil {
+		return Account{}, result.Error
+	}
+	return account, nil
+}
+
 func (r *AccountRepository) DeleteUnconfimed() error {
 	// begin a transaction
 	tx := r.db.Begin()
@@ -76,15 +90,15 @@ func (r *AccountRepository) DeleteUnconfimed() error {
 		return err
 	}
 
-	moveQuery := `INSERT INTO users_deleted 
-				  SELECT * FROM USERS WHERE created_at < now() - INTERVAL '1 day' AND required_confirmation = true`
+	moveQuery := `INSERT INTO accounts_deleted 
+				  SELECT * FROM accounts WHERE created_at < now() - INTERVAL '1 day' AND required_confirmation = true`
 	if err := tx.Exec(moveQuery).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	deleteQuery := `DELETE FROM public.users 
-						  WHERE id IN (SELECT id FROM users WHERE created_at < now() - interval '1 day' AND 
+	deleteQuery := `DELETE FROM public.accounts 
+						  WHERE id IN (SELECT id FROM accounts WHERE created_at < now() - interval '1 day' AND 
 									   required_confirmation = true)`
 	if err := tx.Exec(deleteQuery).Error; err != nil {
 		tx.Rollback()

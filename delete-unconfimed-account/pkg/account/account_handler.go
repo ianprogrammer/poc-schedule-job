@@ -32,15 +32,16 @@ func (ah *Handler) saveAccount(c echo.Context) error {
 		return err
 	}
 
-	product, err := ah.AccountService.Save(Account{
-		Name: a.Name,
+	result, err := ah.AccountService.Save(Account{
+		Name:                 a.Name,
+		RequiredConfirmation: true,
 	})
 
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, product)
+	return c.JSON(http.StatusOK, result)
 }
 
 func (ad *Handler) accountConfirm(c echo.Context) error {
@@ -53,7 +54,9 @@ func (ad *Handler) accountConfirm(c echo.Context) error {
 	}
 
 	product, err := ad.AccountService.ConfirmAccount(id, Account{
-		Name: p.Name,
+		Name:                 p.Name,
+		ID:                   id,
+		RequiredConfirmation: false,
 	})
 
 	if err != nil {
