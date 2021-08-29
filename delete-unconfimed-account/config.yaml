@@ -8,3 +8,7 @@ local:
   server:
     port: 4444
     gracefull_shutdown_timeout: 30
+  redis:
+    host: "localhost"
+    port: 6379
+    password: "secret"

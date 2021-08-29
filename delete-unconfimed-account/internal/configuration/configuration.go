@@ -137,3 +137,21 @@ func (config *Configuration) BuildServerConfig() ServerConfig {
 		GracefullShutdownTimeout: gracefullShutdownTimeout,
 	}
 }
+
+type RedisConfig struct {
+	Host     string
+	Port     int
+	Password string
+}
+
+func (config *Configuration) BuildRedisConfig() RedisConfig {
+	host := config.GetEnvConfString("redis.host")
+	port := config.GetEnvConfInteger("redis.port")
+	password := config.GetEnvConfString("redis.password")
+
+	return RedisConfig{
+		Host:     host,
+		Port:     port,
+		Password: password,
+	}
+}

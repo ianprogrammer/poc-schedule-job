@@ -9,3 +9,9 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: 123456
+      
+  cache:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    command: ['--requirepass "secret"']
